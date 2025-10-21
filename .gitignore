@@ -1,0 +1,45 @@
+# Gradle
+.gradle/
+build/
+dist/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime
+run/
+*.log
+
+# Build artifacts
+*.jar
+*.class
+*.war
+*.ear
+
+# Gradle Wrapper (usually committed, but if you prefer not to)
+# gradle/
+# gradlew
+# gradlew.bat
+
+# Local properties
+local.properties
+gradle.properties
+
+# Dependencies
+*.jar
+!gradle-wrapper.jar
+
+# Environment
+.env
+.env.local
