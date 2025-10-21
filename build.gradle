@@ -11,6 +11,9 @@ base {
 }
 
 repositories {
+    maven {
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+    }
 }
 
 loom {
@@ -30,6 +33,9 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // GeckoLib for entity animations
+    modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:4.4.9"
 }
 
 processResources {
