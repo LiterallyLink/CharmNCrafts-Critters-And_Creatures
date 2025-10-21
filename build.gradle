@@ -34,8 +34,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // GeckoLib for entity animations
+    // GeckoLib for entity animations (bundled with the mod)
     modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:4.4.9"
+    include "software.bernie.geckolib:geckolib-fabric-1.20.1:4.4.9"
 }
 
 processResources {
