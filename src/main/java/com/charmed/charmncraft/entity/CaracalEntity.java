@@ -1,5 +1,6 @@
 package com.charmed.charmncraft.entity;
 
+import com.charmed.charmncraft.ModEntities;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
