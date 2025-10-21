@@ -1,5 +1,6 @@
 package com.charmed.charmncraft;
 
+import com.charmed.charmncraft.entity.CaracalEntity;
 import com.charmed.charmncraft.entity.DuckEntity;
 import com.charmed.charmncraft.entity.QuacklingEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -27,10 +28,19 @@ public class ModEntities {
                     .build()
     );
 
+    public static final EntityType<CaracalEntity> CARACAL = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier("aqupd", "caracal"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, CaracalEntity::new)
+                    .dimensions(EntityType.CAT.getDimensions())
+                    .build()
+    );
+
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering entities.");
 
         FabricDefaultAttributeRegistry.register(DUCK, DuckEntity.createDuckAttributes());
         FabricDefaultAttributeRegistry.register(QUACKLING, QuacklingEntity.createQuacklingAttributes());
+        FabricDefaultAttributeRegistry.register(CARACAL, CaracalEntity.createCaracalAttributes());
     }
 }
