@@ -1,6 +1,7 @@
 package com.charmed.charmncraft.entity;
 
 import com.charmed.charmncraft.ModEntities;
+import com.charmed.charmncraft.ModSounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -87,17 +88,17 @@ public class RedPandaEntity extends AnimalEntity implements GeoEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_FOX_AMBIENT;
+        return ModSounds.RED_PANDA_IDLE;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_FOX_HURT;
+        return ModSounds.RED_PANDA_IDLE;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_FOX_DEATH;
+        return ModSounds.RED_PANDA_DEATH;
     }
 
     @Override
