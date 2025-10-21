@@ -12,7 +12,6 @@ public class CharmNCraft implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Initializing CharmNCraft mod...");
 
-		ModSounds.initialize();
 		ModEntities.initialize();
 		ModItems.initialize();
 

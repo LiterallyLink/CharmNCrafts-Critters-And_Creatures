@@ -3,7 +3,6 @@ package com.charmed.charmncraft;
 import com.charmed.charmncraft.client.renderer.CaracalRenderer;
 import com.charmed.charmncraft.client.renderer.DuckRenderer;
 import com.charmed.charmncraft.client.renderer.QuacklingRenderer;
-import com.charmed.charmncraft.client.renderer.RedPandaRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
@@ -14,6 +13,5 @@ public class CharmNCraftClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.DUCK, DuckRenderer::new);
 		EntityRendererRegistry.register(ModEntities.QUACKLING, QuacklingRenderer::new);
 		EntityRendererRegistry.register(ModEntities.CARACAL, CaracalRenderer::new);
-		EntityRendererRegistry.register(ModEntities.RED_PANDA, RedPandaRenderer::new);
 	}
 }
