@@ -1,0 +1,16 @@
+{
+  "mappings": {
+    "com/github/suel_ki/snuffles/core/mixin/common/FireBlockMixin": {
+      "Lnet/minecraft/block/BlockState;getBlock()Lnet/minecraft/block/Block;": "Lnet/minecraft/class_2680;method_26204()Lnet/minecraft/class_2248;",
+      "trySpreadingFire": "Lnet/minecraft/class_2358;method_10196(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;ILnet/minecraft/class_5819;I)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "com/github/suel_ki/snuffles/core/mixin/common/FireBlockMixin": {
+        "Lnet/minecraft/block/BlockState;getBlock()Lnet/minecraft/block/Block;": "Lnet/minecraft/class_2680;method_26204()Lnet/minecraft/class_2248;",
+        "trySpreadingFire": "Lnet/minecraft/class_2358;method_10196(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;ILnet/minecraft/class_5819;I)V"
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "id": "snuffles",
+  "version": "1.0.0+1.20",
+
+  "name": "Snuffles",
+  "description": "Winterjam 2021 mod that adds Snuffles, a cute new mob to snowy biomes.",
+  "authors": [
+    "Suel_ki"
+  ],
+  "contributors": [
+    "SchnappDragon",
+    "Edmord17"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/snuffles-fabric",
+    "sources": "https://github.com/Suel_ki/snuffles-fabric",
+    "issues": "https://github.com/Suel-ki/snuffles-fabric/issues"
+  },
+
+  "license": "MIT",
+  "icon": "assets/snuffles/icon.png",
+
+  "environment": "*",
+  "accessWidener": "snuffles.accesswidener",
+  "entrypoints": {
+    "main": [
+      "com.github.suel_ki.snuffles.core.Snuffles"
+    ],
+    "client": [
+      "com.github.suel_ki.snuffles.client.SnufflesClient"
+    ]
+  },
+  "mixins": [
+    "snuffles.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "fabric-api": "*",
+    "minecraft": "~1.20",
+    "java": ">=17",
+    "yet_another_config_lib_v3": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/snuffles-fabric"
+      }
+    }
+  },
+  "suggests": {
+    "another-mod": "https://www.curseforge.com/minecraft/mc-mods/beautify-refabricated"
+  }
+}
