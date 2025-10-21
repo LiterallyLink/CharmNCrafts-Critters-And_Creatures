@@ -3,6 +3,7 @@ package com.charmed.charmncraft;
 import com.charmed.charmncraft.entity.CaracalEntity;
 import com.charmed.charmncraft.entity.DuckEntity;
 import com.charmed.charmncraft.entity.QuacklingEntity;
+import com.charmed.charmncraft.entity.RedPandaEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -36,11 +37,20 @@ public class ModEntities {
                     .build()
     );
 
+    public static final EntityType<RedPandaEntity> RED_PANDA = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier("ydms_redpanda", "redpanda"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RedPandaEntity::new)
+                    .dimensions(EntityType.CAT.getDimensions())
+                    .build()
+    );
+
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering entities.");
 
         FabricDefaultAttributeRegistry.register(DUCK, DuckEntity.createDuckAttributes());
         FabricDefaultAttributeRegistry.register(QUACKLING, QuacklingEntity.createQuacklingAttributes());
         FabricDefaultAttributeRegistry.register(CARACAL, CaracalEntity.createCaracalAttributes());
+        FabricDefaultAttributeRegistry.register(RED_PANDA, RedPandaEntity.createRedPandaAttributes());
     }
 }
