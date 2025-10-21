@@ -10,6 +10,11 @@ public class CharmNCraft implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Hello Fabric world!");
+		LOGGER.info("Initializing CharmNCraft mod...");
+
+		ModEntities.initialize();
+		ModItems.initialize();
+
+		LOGGER.info("CharmNCraft mod initialized successfully!");
 	}
 }
