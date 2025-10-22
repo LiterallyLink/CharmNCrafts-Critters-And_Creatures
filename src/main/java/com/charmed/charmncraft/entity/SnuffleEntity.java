@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -79,7 +80,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     }
 
     @Override
-    public void sheared(SoundEvent shearedSoundCategory) {
+    public void sheared(SoundCategory shearedSoundCategory) {
         this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0f, 1.0f);
         this.setSheared(true);
 
