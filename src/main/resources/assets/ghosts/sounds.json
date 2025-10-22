@@ -1,5 +1,5 @@
 {
-  "ghost_ambient": {
+  "entity.ghost.ambient": {
     "category": "ambient",
     "subtitle": "ghosts.ghost_ambient",
     "sounds": [
@@ -12,7 +12,7 @@
       "ghosts:ghost_ambient_7"
     ]
   },
-  "ghost_death": {
+  "entity.ghost.death": {
     "category": "ambient",
     "subtitle": "ghosts.ghost_death",
     "sounds": [
@@ -20,7 +20,7 @@
       "ghosts:ghost_death_2"
     ]
   },
-  "ghost_hurt": {
+  "entity.ghost.hurt": {
     "category": "ambient",
     "subtitle": "ghosts.ghost_hurt",
     "sounds": [
@@ -28,21 +28,23 @@
       "ghosts:ghost_hurt_2"
     ]
   },
-  "mini_ghost_ambient": {
+  "entity.small_ghost.ambient": {
     "category": "ambient",
     "subtitle": "ghosts.mini_ghost_ambient",
     "sounds": [
-      "ghosts:mini_ghost_ambient_1"
+      "ghosts:mini_ghost_ambient_1",
+      "ghosts:mini_ghost_ambient_2",
+      "ghosts:mini_ghost_ambient_3"
     ]
   },
-  "mini_ghost_death": {
+  "entity.small_ghost.death": {
     "category": "ambient",
     "subtitle": "ghosts.mini_ghost_death",
     "sounds": [
       "ghosts:mini_ghost_death_1"
     ]
   },
-  "mini_ghost_hurt": {
+  "entity.small_ghost.hurt": {
     "category": "ambient",
     "subtitle": "ghosts.mini_ghost_hurt",
     "sounds": [

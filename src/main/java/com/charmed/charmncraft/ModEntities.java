@@ -2,7 +2,9 @@ package com.charmed.charmncraft;
 
 import com.charmed.charmncraft.entity.CaracalEntity;
 import com.charmed.charmncraft.entity.DuckEntity;
+import com.charmed.charmncraft.entity.GhostEntity;
 import com.charmed.charmncraft.entity.QuacklingEntity;
+import com.charmed.charmncraft.entity.SmallGhostEntity;
 import com.charmed.charmncraft.entity.SnuffleEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
@@ -45,6 +47,22 @@ public class ModEntities {
                     .build()
     );
 
+    public static final EntityType<GhostEntity> GHOST = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier("ghosts", "ghost"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GhostEntity::new)
+                    .dimensions(EntityType.VEX.getDimensions().scaled(1.2f))
+                    .build()
+    );
+
+    public static final EntityType<SmallGhostEntity> SMALL_GHOST = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier("ghosts", "small_ghost"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, SmallGhostEntity::new)
+                    .dimensions(EntityType.VEX.getDimensions().scaled(0.8f))
+                    .build()
+    );
+
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering entities.");
 
@@ -52,5 +70,7 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(QUACKLING, QuacklingEntity.createQuacklingAttributes());
         FabricDefaultAttributeRegistry.register(CARACAL, CaracalEntity.createCaracalAttributes());
         FabricDefaultAttributeRegistry.register(SNUFFLE, SnuffleEntity.createSnuffleAttributes());
+        FabricDefaultAttributeRegistry.register(GHOST, GhostEntity.createGhostAttributes());
+        FabricDefaultAttributeRegistry.register(SMALL_GHOST, SmallGhostEntity.createSmallGhostAttributes());
     }
 }
