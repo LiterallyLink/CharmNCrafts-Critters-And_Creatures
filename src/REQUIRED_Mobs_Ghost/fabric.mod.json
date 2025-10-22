@@ -1,0 +1,38 @@
+{
+    "schemaVersion": 1,
+    "id": "ghosts",
+    "version": "1.2.0",
+    "name": "Ghosts",
+    "description": "A minecraft mod that adds friendly ghosts to your world!",
+    "authors": [
+        "Joosh7889, Xylonity"
+    ],
+    "contact": {
+        "homepage": "https://fabricmc.net/",
+        "sources": "https://github.com/FabricMC/fabric-example-mod"
+    },
+    "license": "GNU GPLv3",
+    "icon": "assets/modid/ghosts.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.xylonity.bonsai.ghosts.GhostsFabric"
+        ],
+        "client": [
+            "dev.xylonity.bonsai.ghosts.GhostsFabric"
+        ]
+    },
+    "mixins": [
+        "ghosts.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.14",
+        "fabric": "*",
+        "minecraft": "1.20.1",
+        "java": ">=17"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
+}
+  
