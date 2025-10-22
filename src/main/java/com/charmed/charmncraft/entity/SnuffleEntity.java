@@ -190,7 +190,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
             }
 
             if ((this.lastRenderX != this.getX() || this.lastRenderY != this.getY() || this.lastRenderZ != this.getZ()) && this.getRandom().nextBoolean())
-                this.world.addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.4D), this.getRandomBodyY(), this.getParticleZ(0.4D), 0.0D, 0.0D, 0.0D);
+                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.4D), this.getRandomBodyY(), this.getParticleZ(0.4D), 0.0D, 0.0D, 0.0D);
         }
 
         if (!this.hasFluff() && !this.isBaby()) {
@@ -221,23 +221,23 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
         ItemStack stack = player.getStackInHand(hand);
 
         if (stack.isOf(Items.SLIME_BALL)) {
-            if (!this.world.isClient()) {
+            if (!this.getWorld().isClient()) {
                 this.eat(player, hand, stack);
                 this.setHairstyleId((this.getHairstyleId() + 1) % 4);
                 this.playSound(ModSounds.ENTITY_SNUFFLE_STYLE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
             }
 
-            return ActionResult.success(this.world.isClient);
+            return ActionResult.success(this.getWorld().isClient);
         } else if (stack.isOf(Items.MAGMA_CREAM) && this.isFrosty()) {
-            if (!this.world.isClient()) {
+            if (!this.getWorld().isClient()) {
                 this.setFrosty(false);
                 this.eat(player, hand, stack);
                 this.playSound(ModSounds.ENTITY_SNUFFLE_THAW, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
             }
 
-            return ActionResult.success(this.world.isClient);
+            return ActionResult.success(this.getWorld().isClient);
         } else  if (stack.isIn(ConventionalItemTags.SHEARS)) {
-            if (!this.world.isClient() && this.isShearable()) {
+            if (!this.getWorld().isClient() && this.isShearable()) {
                 this.sheared(SoundCategory.PLAYERS);
                 this.emitGameEvent(GameEvent.SHEAR, player);
                 stack.damage(1, player, (playerx) -> playerx.sendToolBreakStatus(hand));
@@ -290,7 +290,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     public void handleStatus(byte id) {
         if (id == 10) {
             for (int i = 0; i < 4; i ++)
-                this.world.addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.8D), this.getEyeY(), this.getParticleZ(0.8D), 0.0D, 0.1D, 0.0D);
+                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.8D), this.getEyeY(), this.getParticleZ(0.8D), 0.0D, 0.1D, 0.0D);
         } else
             super.handleStatus(id);
     }
@@ -301,7 +301,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
 
     @Override
     public void sheared(SoundCategory shearedSoundCategory) {
-        this.world.playSoundFromEntity(null, this, ModSounds.ENTITY_SNUFFLE_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+        this.getWorld().playSoundFromEntity(null, this, ModSounds.ENTITY_SNUFFLE_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
         this.setFluff(false);
         this.fluffGrowTime = 18000 + this.getRandom().nextInt(6000);
         ItemEntity itemEntity = this.dropStack(new ItemStack(this.isFrosty() ? ModBlocks.FROSTY_FLUFF : ModBlocks.SNUFFLE_FLUFF), 1.0F);
@@ -440,7 +440,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
                 --this.countdown;
                 return false;
             } else {
-                World world = SnuffleEntity.this.world;
+                World world = SnuffleEntity.this.getWorld();
                 BlockPos pos = SnuffleEntity.this.getBlockPos();
                 return !SnuffleEntity.this.isFrosty() && (SnuffleEntity.this.isSnowingAt(world, pos) || world.getBlockState(pos).isOf(Blocks.POWDER_SNOW));
             }
@@ -453,7 +453,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
             if (SnuffleEntity.this.getFrostCounter() % this.getTickCount(4) == 0) {
                 SnuffleEntity.this.playSound(ModSounds.ENTITY_SNUFFLE_SHAKE, 1.0F, (SnuffleEntity.this.random.nextFloat() - SnuffleEntity.this.random.nextFloat()) * 0.2F + 1.0F);
                 SnuffleEntity.this.setFrosty(SnuffleEntity.this.getFrostCounter() == this.getTickCount(4));
-                SnuffleEntity.this.world.sendEntityStatus(SnuffleEntity.this, (byte) 10);
+                SnuffleEntity.this.getWorld().sendEntityStatus(SnuffleEntity.this, (byte) 10);
             }
         }
 
