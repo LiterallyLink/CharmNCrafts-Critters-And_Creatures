@@ -1,10 +1,4 @@
 {
-  "block.frosty_fluff.thaw": {
-    "subtitle": "snuffles.subtitles.block.frosty_fluff.thaw",
-    "sounds": [
-      "random/fizz"
-    ]
-  },
   "entity.snuffle.ambient": {
     "subtitle": "snuffles.subtitles.entity.snuffle.ambient",
     "sounds": [
@@ -63,18 +57,6 @@
       "mob/cow/step2",
       "mob/cow/step3",
       "mob/cow/step4"
-    ]
-  },
-  "entity.snuffle.style": {
-    "subtitle": "snuffles.subtitles.entity.snuffle.style",
-    "sounds": [
-      "snuffles:mob/snuffle/style"
-    ]
-  },
-  "entity.snuffle.thaw": {
-    "subtitle": "snuffles.subtitles.entity.snuffle.thaw",
-    "sounds": [
-      "random/fizz"
     ]
   }
 }
