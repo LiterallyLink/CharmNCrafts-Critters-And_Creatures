@@ -3,6 +3,7 @@ package com.charmed.charmncraft;
 import com.charmed.charmncraft.entity.CaracalEntity;
 import com.charmed.charmncraft.entity.DuckEntity;
 import com.charmed.charmncraft.entity.QuacklingEntity;
+import com.charmed.charmncraft.entity.SnuffleEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
@@ -36,11 +37,20 @@ public class ModEntities {
                     .build()
     );
 
+    public static final EntityType<SnuffleEntity> SNUFFLE = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier("snuffles", "snuffle"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, SnuffleEntity::new)
+                    .dimensions(EntityType.POLAR_BEAR.getDimensions().scaled(0.7f))
+                    .build()
+    );
+
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering entities.");
 
         FabricDefaultAttributeRegistry.register(DUCK, DuckEntity.createDuckAttributes());
         FabricDefaultAttributeRegistry.register(QUACKLING, QuacklingEntity.createQuacklingAttributes());
         FabricDefaultAttributeRegistry.register(CARACAL, CaracalEntity.createCaracalAttributes());
+        FabricDefaultAttributeRegistry.register(SNUFFLE, SnuffleEntity.createSnuffleAttributes());
     }
 }

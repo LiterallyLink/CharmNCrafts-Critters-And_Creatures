@@ -30,6 +30,12 @@ public class ModItems {
             new SpawnEggItem(ModEntities.CARACAL, 0xCD853F, 0x8B4513, new FabricItemSettings())
     );
 
+    public static final Item SNUFFLE_SPAWN_EGG = Registry.register(
+            Registries.ITEM,
+            new Identifier("snuffles", "snuffle_spawn_egg"),
+            new SpawnEggItem(ModEntities.SNUFFLE, 0xE8F4F8, 0x7FB3D5, new FabricItemSettings())
+    );
+
     // Food Items
     public static final Item RAW_DUCK = Registry.register(
             Registries.ITEM,
@@ -57,6 +63,7 @@ public class ModItems {
             content.add(DUCK_SPAWN_EGG);
             content.add(QUACKLING_SPAWN_EGG);
             content.add(CARACAL_SPAWN_EGG);
+            content.add(SNUFFLE_SPAWN_EGG);
         });
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
