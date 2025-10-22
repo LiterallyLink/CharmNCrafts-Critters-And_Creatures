@@ -13,6 +13,9 @@ public class ModSounds {
     public static final SoundEvent ENTITY_SNUFFLE_EAT = registerSound("entity.snuffle.eat");
     public static final SoundEvent ENTITY_SNUFFLE_SHAKE = registerSound("entity.snuffle.shake");
     public static final SoundEvent ENTITY_SNUFFLE_STEP = registerSound("entity.snuffle.step");
+    public static final SoundEvent ENTITY_SNUFFLE_SHEAR = registerSound("entity.snuffle.shear");
+    public static final SoundEvent ENTITY_SNUFFLE_STYLE = registerSound("entity.snuffle.style");
+    public static final SoundEvent ENTITY_SNUFFLE_THAW = registerSound("entity.snuffle.thaw");
 
     private static SoundEvent registerSound(String id) {
         Identifier identifier = new Identifier("snuffles", id);
