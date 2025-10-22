@@ -24,10 +24,21 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class SnuffleEntity extends AnimalEntity implements Shearable {
+public class SnuffleEntity extends AnimalEntity implements Shearable, GeoEntity {
     private static final TrackedData<Boolean> SHEARED = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
+    private static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public SnuffleEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -121,5 +132,20 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     @Override
     protected void playStepSound(net.minecraft.util.math.BlockPos pos, net.minecraft.block.BlockState state) {
         this.playSound(ModSounds.ENTITY_SNUFFLE_STEP, 0.15f, 1.0f);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "controller", 5, state -> {
+            if (state.isMoving()) {
+                return state.setAndContinue(WALK_ANIM);
+            }
+            return state.setAndContinue(IDLE_ANIM);
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }
