@@ -30,7 +30,6 @@
 		},
 		"snuffles.mixins.json"
 	],
-	"accessWidener": "snuffles.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.17.2",
 		"minecraft": "~1.20.1",
