@@ -3,13 +3,13 @@
 	"id": "charmncraft",
 	"version": "${version}",
 	"name": "CharmNCraft",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Adds adorable critters and creatures to Minecraft: Ducks, Quacklings, Caracals, and Snuffles with unique behaviors and interactions.",
 	"authors": [
-		"Me!"
+		"LiterallyLink"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/LiterallyLink/CharmNCrafts-Critters-And_Creatures",
+		"sources": "https://github.com/LiterallyLink/CharmNCrafts-Critters-And_Creatures"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/charmncraft/icon.png",
@@ -22,22 +22,11 @@
 			"com.charmed.charmncraft.CharmNCraftClient"
 		]
 	},
-	"mixins": [
-		"charmncraft.mixins.json",
-		{
-			"config": "charmncraft.client.mixins.json",
-			"environment": "client"
-		},
-		"snuffles.mixins.json"
-	],
 	"depends": {
 		"fabricloader": ">=0.17.2",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*",
 		"geckolib": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }

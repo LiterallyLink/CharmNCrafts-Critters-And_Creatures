@@ -57,13 +57,41 @@ import java.util.EnumSet;
 
 public class SnuffleEntity extends AnimalEntity implements Shearable {
 
+    // Constants
+    private static final int FLUFF_GROWTH_BASE_TICKS = 18000; // 15 minutes (18000 ticks = 900 seconds)
+    private static final int FLUFF_GROWTH_RANDOM_TICKS = 6000; // Up to 5 additional minutes
+    private static final int MAX_HAIRSTYLES = 4;
+    private static final int MIN_HAIRSTYLE_ID = 0;
+    private static final int MAX_HAIRSTYLE_ID = 3;
+    private static final int BABY_BREEDING_AGE_TICKS = -24000; // -20 minutes
+    private static final int FROST_PARTICLE_COUNT = 4;
+    private static final double PARTICLE_OFFSET_SMALL = 0.4D;
+    private static final double PARTICLE_OFFSET_LARGE = 0.8D;
+
+    // Entity Attributes
+    private static final double MAX_HEALTH = 20.0D;
+    private static final double MOVEMENT_SPEED = 0.2D;
+    private static final double ATTACK_DAMAGE = 2.0D;
+
+    // AI Goal Speeds
+    private static final double ESCAPE_DANGER_SPEED = 1.5D;
+    private static final double MATING_SPEED = 1.0D;
+    private static final double TEMPT_SPEED = 1.1D;
+    private static final double FOLLOW_PARENT_SPEED = 1.1D;
+    private static final double WANDER_SPEED = 1.0D;
+    private static final float LOOK_AT_PLAYER_DISTANCE = 6.0F;
+
+    // Leash Offset Multipliers
+    private static final float LEASH_OFFSET_HEIGHT_MULTIPLIER = 0.6F;
+    private static final float LEASH_OFFSET_WIDTH_MULTIPLIER = 0.4F;
+
     private static final TrackedData<Integer> FROST_COUNTER = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> DATA_HAIRSTYLE_ID = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> DATA_FLUFF = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> DATA_FROSTY = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IS_LICKING = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private int fluffGrowTime = 18000 + this.getRandom().nextInt(6000);
+    private int fluffGrowTime = FLUFF_GROWTH_BASE_TICKS + this.getRandom().nextInt(FLUFF_GROWTH_RANDOM_TICKS);
 
     public SnuffleEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
@@ -71,27 +99,27 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
 
     public static DefaultAttributeContainer.Builder createSnuffleAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0D)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0D);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, MAX_HEALTH)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, ATTACK_DAMAGE);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new EscapeDangerGoal(this, 1.5D));
-        this.goalSelector.add(3, new AnimalMateGoal(this, 1.0D));
-        this.goalSelector.add(4, new SnuffleTemptGoal(1.1D, Ingredient.fromTag(ModTags.Items.SNUFFLE_FOOD), false));
-        this.goalSelector.add(5, new FollowParentGoal(this, 1.1D));
+        this.goalSelector.add(2, new EscapeDangerGoal(this, ESCAPE_DANGER_SPEED));
+        this.goalSelector.add(3, new AnimalMateGoal(this, MATING_SPEED));
+        this.goalSelector.add(4, new SnuffleTemptGoal(TEMPT_SPEED, Ingredient.fromTag(ModTags.Items.SNUFFLE_FOOD), false));
+        this.goalSelector.add(5, new FollowParentGoal(this, FOLLOW_PARENT_SPEED));
         this.goalSelector.add(6, new FrostGoal());
-        this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.add(7, new WanderAroundFarGoal(this, WANDER_SPEED));
+        this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, LOOK_AT_PLAYER_DISTANCE));
         this.goalSelector.add(9, new LookAroundGoal(this));
     }
 
     @Override
     public Vec3d getLeashOffset() {
-        return new Vec3d(0.0D, 0.6F * this.getStandingEyeHeight(), this.getWidth() * 0.4F);
+        return new Vec3d(0.0D, LEASH_OFFSET_HEIGHT_MULTIPLIER * this.getStandingEyeHeight(), this.getWidth() * LEASH_OFFSET_WIDTH_MULTIPLIER);
     }
 
     /*
@@ -143,7 +171,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     }
 
     public int getHairstyleId() {
-        return MathHelper.clamp(this.dataTracker.get(DATA_HAIRSTYLE_ID), 0, 3);
+        return MathHelper.clamp(this.dataTracker.get(DATA_HAIRSTYLE_ID), MIN_HAIRSTYLE_ID, MAX_HAIRSTYLE_ID);
     }
 
     public Hairstyle getHairstyle() {
@@ -190,7 +218,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
             }
 
             if ((this.lastRenderX != this.getX() || this.lastRenderY != this.getY() || this.lastRenderZ != this.getZ()) && this.getRandom().nextBoolean())
-                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.4D), this.getRandomBodyY(), this.getParticleZ(0.4D), 0.0D, 0.0D, 0.0D);
+                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(PARTICLE_OFFSET_SMALL), this.getRandomBodyY(), this.getParticleZ(PARTICLE_OFFSET_SMALL), 0.0D, 0.0D, 0.0D);
         }
 
         if (!this.hasFluff() && !this.isBaby()) {
@@ -223,7 +251,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
         if (stack.isOf(Items.SLIME_BALL)) {
             if (!this.getWorld().isClient()) {
                 this.eat(player, hand, stack);
-                this.setHairstyleId((this.getHairstyleId() + 1) % 4);
+                this.setHairstyleId((this.getHairstyleId() + 1) % MAX_HAIRSTYLES);
                 this.playSound(ModSounds.ENTITY_SNUFFLE_STYLE, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
             }
 
@@ -289,8 +317,8 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     @Override
     public void handleStatus(byte id) {
         if (id == 10) {
-            for (int i = 0; i < 4; i ++)
-                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(0.8D), this.getEyeY(), this.getParticleZ(0.8D), 0.0D, 0.1D, 0.0D);
+            for (int i = 0; i < FROST_PARTICLE_COUNT; i ++)
+                this.getWorld().addParticle(ModParticles.SNOWFLAKE, this.getParticleX(PARTICLE_OFFSET_LARGE), this.getEyeY(), this.getParticleZ(PARTICLE_OFFSET_LARGE), 0.0D, 0.1D, 0.0D);
         } else
             super.handleStatus(id);
     }
@@ -303,7 +331,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
     public void sheared(SoundCategory shearedSoundCategory) {
         this.getWorld().playSoundFromEntity(null, this, ModSounds.ENTITY_SNUFFLE_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
         this.setFluff(false);
-        this.fluffGrowTime = 18000 + this.getRandom().nextInt(6000);
+        this.fluffGrowTime = FLUFF_GROWTH_BASE_TICKS + this.getRandom().nextInt(FLUFF_GROWTH_RANDOM_TICKS);
         ItemEntity itemEntity = this.dropStack(new ItemStack(this.isFrosty() ? ModBlocks.FROSTY_FLUFF : ModBlocks.SNUFFLE_FLUFF), 1.0F);
         if (itemEntity != null) {
             itemEntity.setVelocity(itemEntity.getVelocity()
@@ -334,7 +362,7 @@ public class SnuffleEntity extends AnimalEntity implements Shearable {
 
         SnuffleGroupData snuffleGroupData = (SnuffleGroupData) groupData;
         if (snuffleGroupData.getSpawnedCount() > 0 && this.random.nextFloat() <= snuffleGroupData.getBabyChance())
-            this.setBreedingAge(-24000);
+            this.setBreedingAge(BABY_BREEDING_AGE_TICKS);
         else
             this.setFluff(true);
 

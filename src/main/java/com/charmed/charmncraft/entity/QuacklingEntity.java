@@ -25,6 +25,17 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class QuacklingEntity extends AnimalEntity implements GeoEntity {
+    // Constants
+    private static final double MAX_HEALTH = 3.0;
+    private static final double MOVEMENT_SPEED = 0.3;
+    private static final double ESCAPE_DANGER_SPEED = 1.5;
+    private static final double MATING_SPEED = 1.0;
+    private static final double TEMPT_SPEED = 1.0;
+    private static final double FOLLOW_PARENT_SPEED = 1.2;
+    private static final double WANDER_SPEED = 1.0;
+    private static final float LOOK_AT_PLAYER_DISTANCE = 6.0F;
+    private static final int ANIMATION_TRANSITION_TICKS = 5;
+
     private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
     private static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
 
@@ -36,19 +47,19 @@ public class QuacklingEntity extends AnimalEntity implements GeoEntity {
 
     public static DefaultAttributeContainer.Builder createQuacklingAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, MAX_HEALTH)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, MOVEMENT_SPEED);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 1.5));
-        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-        this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS), false));
-        this.goalSelector.add(4, new FollowParentGoal(this, 1.2));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0f));
+        this.goalSelector.add(1, new EscapeDangerGoal(this, ESCAPE_DANGER_SPEED));
+        this.goalSelector.add(2, new AnimalMateGoal(this, MATING_SPEED));
+        this.goalSelector.add(3, new TemptGoal(this, TEMPT_SPEED, Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS), false));
+        this.goalSelector.add(4, new FollowParentGoal(this, FOLLOW_PARENT_SPEED));
+        this.goalSelector.add(5, new WanderAroundFarGoal(this, WANDER_SPEED));
+        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, LOOK_AT_PLAYER_DISTANCE));
         this.goalSelector.add(7, new LookAroundGoal(this));
     }
 
@@ -81,7 +92,7 @@ public class QuacklingEntity extends AnimalEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 5, state -> {
+        controllers.add(new AnimationController<>(this, "controller", ANIMATION_TRANSITION_TICKS, state -> {
             if (state.isMoving()) {
                 return state.setAndContinue(WALK_ANIM);
             }
