@@ -70,7 +70,9 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(2, new SmallGhostSitGoal());
+        this.goalSelector.add(3, new SmallGhostFollowOwnerGoal(1.0, 10.0F, 2.0F));
+        this.goalSelector.add(5, new SmallGhostWanderGoal(1.0));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
     }
@@ -250,5 +252,165 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     public boolean canBeLeashedBy(PlayerEntity player) {
         return this.isTamed() && super.canBeLeashedBy(player);
+    }
+
+    /*
+     * Custom AI Goals
+     */
+
+    class SmallGhostSitGoal extends Goal {
+        public SmallGhostSitGoal() {
+            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
+        }
+
+        @Override
+        public boolean canStart() {
+            return SmallGhostEntity.this.isSitting();
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return SmallGhostEntity.this.isSitting();
+        }
+
+        @Override
+        public void start() {
+            SmallGhostEntity.this.getNavigation().stop();
+        }
+    }
+
+    class SmallGhostFollowOwnerGoal extends Goal {
+        private final double speed;
+        private final float minDistance;
+        private final float maxDistance;
+        private PlayerEntity owner;
+        private int updateCountdownTicks;
+
+        public SmallGhostFollowOwnerGoal(double speed, float maxDistance, float minDistance) {
+            this.speed = speed;
+            this.minDistance = minDistance;
+            this.maxDistance = maxDistance;
+            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+        }
+
+        @Override
+        public boolean canStart() {
+            PlayerEntity owner = SmallGhostEntity.this.getOwner();
+            if (owner == null) {
+                return false;
+            }
+            if (SmallGhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (SmallGhostEntity.this.getInteractionState() != 1) {
+                return false;
+            }
+            if (SmallGhostEntity.this.squaredDistanceTo(owner) < (double)(this.minDistance * this.minDistance)) {
+                return false;
+            }
+            this.owner = owner;
+            return true;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            if (SmallGhostEntity.this.getNavigation().isIdle()) {
+                return false;
+            }
+            if (SmallGhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (SmallGhostEntity.this.getInteractionState() != 1) {
+                return false;
+            }
+            return SmallGhostEntity.this.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance);
+        }
+
+        @Override
+        public void start() {
+            this.updateCountdownTicks = 0;
+        }
+
+        @Override
+        public void stop() {
+            this.owner = null;
+            SmallGhostEntity.this.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            SmallGhostEntity.this.getLookControl().lookAt(this.owner, 10.0F, (float)SmallGhostEntity.this.getMaxLookPitchChange());
+            if (--this.updateCountdownTicks <= 0) {
+                this.updateCountdownTicks = 10;
+                if (!SmallGhostEntity.this.isLeashed() && !SmallGhostEntity.this.hasVehicle()) {
+                    if (SmallGhostEntity.this.squaredDistanceTo(this.owner) >= 144.0) {
+                        this.tryTeleport();
+                    } else {
+                        SmallGhostEntity.this.getNavigation().startMovingTo(this.owner, this.speed);
+                    }
+                }
+            }
+        }
+
+        private void tryTeleport() {
+            net.minecraft.util.math.BlockPos ownerPos = this.owner.getBlockPos();
+            for (int i = 0; i < 10; i++) {
+                int x = this.getRandomInt(-3, 3);
+                int y = this.getRandomInt(-1, 1);
+                int z = this.getRandomInt(-3, 3);
+                if (this.tryTeleportTo(ownerPos.getX() + x, ownerPos.getY() + y, ownerPos.getZ() + z)) {
+                    return;
+                }
+            }
+        }
+
+        private boolean tryTeleportTo(int x, int y, int z) {
+            if (Math.abs((double)x - this.owner.getX()) < 2.0 && Math.abs((double)z - this.owner.getZ()) < 2.0) {
+                return false;
+            }
+            if (!this.canTeleportTo(new net.minecraft.util.math.BlockPos(x, y, z))) {
+                return false;
+            }
+            SmallGhostEntity.this.refreshPositionAndAngles((double)x + 0.5, y, (double)z + 0.5, SmallGhostEntity.this.getYaw(), SmallGhostEntity.this.getPitch());
+            SmallGhostEntity.this.getNavigation().stop();
+            return true;
+        }
+
+        private boolean canTeleportTo(net.minecraft.util.math.BlockPos pos) {
+            net.minecraft.world.WorldView world = SmallGhostEntity.this.getWorld();
+            return world.isSpaceEmpty(SmallGhostEntity.this, SmallGhostEntity.this.getBoundingBox().offset(pos.subtract(SmallGhostEntity.this.getBlockPos())));
+        }
+
+        private int getRandomInt(int min, int max) {
+            return SmallGhostEntity.this.getRandom().nextInt(max - min + 1) + min;
+        }
+    }
+
+    class SmallGhostWanderGoal extends WanderAroundFarGoal {
+        public SmallGhostWanderGoal(double speed) {
+            super(SmallGhostEntity.this, speed);
+        }
+
+        @Override
+        public boolean canStart() {
+            if (SmallGhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (SmallGhostEntity.this.isTamed() && SmallGhostEntity.this.getInteractionState() != 2) {
+                return false;
+            }
+            return super.canStart();
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            if (SmallGhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (SmallGhostEntity.this.isTamed() && SmallGhostEntity.this.getInteractionState() != 2) {
+                return false;
+            }
+            return super.shouldContinue();
+        }
     }
 }

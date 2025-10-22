@@ -70,7 +70,9 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(2, new GhostSitGoal());
+        this.goalSelector.add(3, new GhostFollowOwnerGoal(1.0, 10.0F, 2.0F));
+        this.goalSelector.add(5, new GhostWanderGoal(1.0));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
     }
@@ -250,5 +252,165 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     public boolean canBeLeashedBy(PlayerEntity player) {
         return this.isTamed() && super.canBeLeashedBy(player);
+    }
+
+    /*
+     * Custom AI Goals
+     */
+
+    class GhostSitGoal extends Goal {
+        public GhostSitGoal() {
+            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP));
+        }
+
+        @Override
+        public boolean canStart() {
+            return GhostEntity.this.isSitting();
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return GhostEntity.this.isSitting();
+        }
+
+        @Override
+        public void start() {
+            GhostEntity.this.getNavigation().stop();
+        }
+    }
+
+    class GhostFollowOwnerGoal extends Goal {
+        private final double speed;
+        private final float minDistance;
+        private final float maxDistance;
+        private PlayerEntity owner;
+        private int updateCountdownTicks;
+
+        public GhostFollowOwnerGoal(double speed, float maxDistance, float minDistance) {
+            this.speed = speed;
+            this.minDistance = minDistance;
+            this.maxDistance = maxDistance;
+            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+        }
+
+        @Override
+        public boolean canStart() {
+            PlayerEntity owner = GhostEntity.this.getOwner();
+            if (owner == null) {
+                return false;
+            }
+            if (GhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (GhostEntity.this.getInteractionState() != 1) {
+                return false;
+            }
+            if (GhostEntity.this.squaredDistanceTo(owner) < (double)(this.minDistance * this.minDistance)) {
+                return false;
+            }
+            this.owner = owner;
+            return true;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            if (GhostEntity.this.getNavigation().isIdle()) {
+                return false;
+            }
+            if (GhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (GhostEntity.this.getInteractionState() != 1) {
+                return false;
+            }
+            return GhostEntity.this.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance);
+        }
+
+        @Override
+        public void start() {
+            this.updateCountdownTicks = 0;
+        }
+
+        @Override
+        public void stop() {
+            this.owner = null;
+            GhostEntity.this.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            GhostEntity.this.getLookControl().lookAt(this.owner, 10.0F, (float)GhostEntity.this.getMaxLookPitchChange());
+            if (--this.updateCountdownTicks <= 0) {
+                this.updateCountdownTicks = 10;
+                if (!GhostEntity.this.isLeashed() && !GhostEntity.this.hasVehicle()) {
+                    if (GhostEntity.this.squaredDistanceTo(this.owner) >= 144.0) {
+                        this.tryTeleport();
+                    } else {
+                        GhostEntity.this.getNavigation().startMovingTo(this.owner, this.speed);
+                    }
+                }
+            }
+        }
+
+        private void tryTeleport() {
+            net.minecraft.util.math.BlockPos ownerPos = this.owner.getBlockPos();
+            for (int i = 0; i < 10; i++) {
+                int x = this.getRandomInt(-3, 3);
+                int y = this.getRandomInt(-1, 1);
+                int z = this.getRandomInt(-3, 3);
+                if (this.tryTeleportTo(ownerPos.getX() + x, ownerPos.getY() + y, ownerPos.getZ() + z)) {
+                    return;
+                }
+            }
+        }
+
+        private boolean tryTeleportTo(int x, int y, int z) {
+            if (Math.abs((double)x - this.owner.getX()) < 2.0 && Math.abs((double)z - this.owner.getZ()) < 2.0) {
+                return false;
+            }
+            if (!this.canTeleportTo(new net.minecraft.util.math.BlockPos(x, y, z))) {
+                return false;
+            }
+            GhostEntity.this.refreshPositionAndAngles((double)x + 0.5, y, (double)z + 0.5, GhostEntity.this.getYaw(), GhostEntity.this.getPitch());
+            GhostEntity.this.getNavigation().stop();
+            return true;
+        }
+
+        private boolean canTeleportTo(net.minecraft.util.math.BlockPos pos) {
+            net.minecraft.world.WorldView world = GhostEntity.this.getWorld();
+            return world.isSpaceEmpty(GhostEntity.this, GhostEntity.this.getBoundingBox().offset(pos.subtract(GhostEntity.this.getBlockPos())));
+        }
+
+        private int getRandomInt(int min, int max) {
+            return GhostEntity.this.getRandom().nextInt(max - min + 1) + min;
+        }
+    }
+
+    class GhostWanderGoal extends WanderAroundFarGoal {
+        public GhostWanderGoal(double speed) {
+            super(GhostEntity.this, speed);
+        }
+
+        @Override
+        public boolean canStart() {
+            if (GhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (GhostEntity.this.isTamed() && GhostEntity.this.getInteractionState() != 2) {
+                return false;
+            }
+            return super.canStart();
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            if (GhostEntity.this.isSitting()) {
+                return false;
+            }
+            if (GhostEntity.this.isTamed() && GhostEntity.this.getInteractionState() != 2) {
+                return false;
+            }
+            return super.shouldContinue();
+        }
     }
 }
