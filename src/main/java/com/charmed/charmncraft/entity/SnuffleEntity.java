@@ -35,8 +35,8 @@ public class SnuffleEntity extends AnimalEntity implements Shearable, GeoEntity 
     private static final TrackedData<Boolean> SHEARED = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(SnuffleEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("idle");
-    private static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("walk");
+    private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("animation.snuffle.idle");
+    private static final RawAnimation WALK_ANIM = RawAnimation.begin().thenLoop("animation.snuffle.walk");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
