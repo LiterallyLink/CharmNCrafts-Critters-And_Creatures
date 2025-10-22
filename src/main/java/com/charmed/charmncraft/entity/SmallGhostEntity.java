@@ -9,12 +9,12 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
@@ -30,7 +30,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import com.charmed.charmncraft.ModSounds;
 
-public class SmallGhostEntity extends TameableEntity implements GeoEntity {
+import java.util.UUID;
+
+public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     // Constants
     private static final double MAX_HEALTH = 10.0;
     private static final double MOVEMENT_SPEED = 0.25;
@@ -42,6 +44,8 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
     // Tracked data
     private static final TrackedData<Integer> INTERACTION_STATE = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> IS_HOLDING_ITEM = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> IS_SITTING = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<java.util.Optional<UUID>> OWNER_UUID = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
     // Animations
     private static final RawAnimation IDLE_ANIM = RawAnimation.begin().thenLoop("ghost_idle");
@@ -50,7 +54,7 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-    public SmallGhostEntity(EntityType<? extends TameableEntity> entityType, World world) {
+    public SmallGhostEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
         this.setNoGravity(true);
     }
@@ -66,8 +70,6 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new SitGoal(this));
-        this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F, false));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -78,6 +80,8 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
         super.initDataTracker();
         this.dataTracker.startTracking(INTERACTION_STATE, 0);
         this.dataTracker.startTracking(IS_HOLDING_ITEM, false);
+        this.dataTracker.startTracking(IS_SITTING, false);
+        this.dataTracker.startTracking(OWNER_UUID, java.util.Optional.empty());
     }
 
     @Override
@@ -85,6 +89,10 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("InteractionState", this.getInteractionState());
         nbt.putBoolean("IsHoldingItem", this.isHoldingItem());
+        nbt.putBoolean("Sitting", this.isSitting());
+        if (this.getOwnerUuid() != null) {
+            nbt.putUuid("Owner", this.getOwnerUuid());
+        }
     }
 
     @Override
@@ -92,6 +100,10 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
         super.readCustomDataFromNbt(nbt);
         this.setInteractionState(nbt.getInt("InteractionState"));
         this.setHoldingItem(nbt.getBoolean("IsHoldingItem"));
+        this.setSitting(nbt.getBoolean("Sitting"));
+        if (nbt.containsUuid("Owner")) {
+            this.setOwnerUuid(nbt.getUuid("Owner"));
+        }
     }
 
     public int getInteractionState() {
@@ -108,6 +120,37 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
 
     public void setHoldingItem(boolean holding) {
         this.dataTracker.set(IS_HOLDING_ITEM, holding);
+    }
+
+    public boolean isSitting() {
+        return this.dataTracker.get(IS_SITTING);
+    }
+
+    public void setSitting(boolean sitting) {
+        this.dataTracker.set(IS_SITTING, sitting);
+    }
+
+    @Nullable
+    public UUID getOwnerUuid() {
+        return this.dataTracker.get(OWNER_UUID).orElse(null);
+    }
+
+    public void setOwnerUuid(@Nullable UUID uuid) {
+        this.dataTracker.set(OWNER_UUID, java.util.Optional.ofNullable(uuid));
+    }
+
+    @Nullable
+    public PlayerEntity getOwner() {
+        UUID uuid = this.getOwnerUuid();
+        return uuid == null ? null : this.getWorld().getPlayerByUuid(uuid);
+    }
+
+    public void setOwner(@Nullable PlayerEntity player) {
+        this.setOwnerUuid(player == null ? null : player.getUuid());
+    }
+
+    public boolean isTamed() {
+        return this.getOwnerUuid() != null;
     }
 
     @Override
@@ -148,8 +191,13 @@ public class SmallGhostEntity extends TameableEntity implements GeoEntity {
 
     @Nullable
     @Override
-    public SmallGhostEntity createChild(ServerWorld world, net.minecraft.entity.passive.PassiveEntity entity) {
+    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null; // Small ghosts don't breed
+    }
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false; // Small ghosts don't breed
     }
 
     @Override
