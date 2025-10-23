@@ -147,12 +147,11 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
 
-        if (this.getWorld().isClient) {
-            return ActionResult.CONSUME;
-        }
-
         if (this.isTamed()) {
             if (this.isOwner(player)) {
+                if (this.getWorld().isClient) {
+                    return ActionResult.SUCCESS;
+                }
                 // Toggle sitting state like dogs
                 this.setSitting(!this.isSitting());
                 this.jumping = false;
@@ -161,6 +160,10 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
                 return ActionResult.SUCCESS;
             }
         } else if (itemStack.isOf(Items.GLOWSTONE_DUST)) {
+            if (this.getWorld().isClient) {
+                return ActionResult.SUCCESS;
+            }
+
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
@@ -176,6 +179,10 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
                 this.getWorld().sendEntityStatus(this, (byte) 6); // Smoke particles
             }
             return ActionResult.SUCCESS;
+        }
+
+        if (this.getWorld().isClient) {
+            return ActionResult.CONSUME;
         }
 
         return super.interactMob(player, hand);
@@ -199,6 +206,11 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     }
 
     private void showEmoteParticle(boolean positive) {
+        // Only spawn particles on client side
+        if (!this.getWorld().isClient) {
+            return;
+        }
+
         net.minecraft.particle.ParticleEffect particleEffect = positive
             ? net.minecraft.particle.ParticleTypes.HEART
             : net.minecraft.particle.ParticleTypes.SMOKE;
