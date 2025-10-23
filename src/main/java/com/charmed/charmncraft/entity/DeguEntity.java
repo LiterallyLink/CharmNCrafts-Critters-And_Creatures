@@ -199,12 +199,12 @@ public class DeguEntity extends AnimalEntity implements GeoEntity {
     // Get texture name based on variant
     public String getTextureName() {
         return switch (this.getVariant()) {
-            case 1 -> "blue";
-            case 2 -> "sand";
-            case 3 -> "agouti";
-            case 4 -> "agoutipied";
+            case 1 -> "sand";
+            case 2 -> "blue";
+            case 3 -> "agoutipied";
+            case 4 -> "white";
             case 5 -> "black";
-            default -> "white";
+            default -> "agouti";
         };
     }
 }
