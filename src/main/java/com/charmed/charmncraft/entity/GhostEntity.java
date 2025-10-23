@@ -368,46 +368,26 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
         }
     }
 
-    class GhostFlyGoal extends Goal {
+    class GhostFlyGoal extends WanderAroundFarGoal {
         public GhostFlyGoal() {
-            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE));
+            super(GhostEntity.this, 1.0);
         }
 
         @Override
         public boolean canStart() {
-            // Only fly around if untamed
+            // Only wander if untamed
             if (GhostEntity.this.isTamed()) {
                 return false;
             }
-
-            // Check if already has a movement target
-            net.minecraft.entity.ai.control.MoveControl moveControl = GhostEntity.this.getMoveControl();
-            if (!moveControl.isMoving()) {
-                // Random chance to start flying (like ghasts)
-                return GhostEntity.this.getRandom().nextInt(120) == 0;
-            }
-            return false;
+            return super.canStart();
         }
 
         @Override
         public boolean shouldContinue() {
-            // Stop if tamed
             if (GhostEntity.this.isTamed()) {
                 return false;
             }
-            // Continue while moving
-            return GhostEntity.this.getMoveControl().isMoving();
-        }
-
-        @Override
-        public void start() {
-            // Generate random target position like ghasts do
-            double targetX = GhostEntity.this.getX() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
-            double targetY = GhostEntity.this.getY() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 8.0;
-            double targetZ = GhostEntity.this.getZ() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
-
-            // Use move control directly like ghasts
-            GhostEntity.this.getMoveControl().moveTo(targetX, targetY, targetZ, 1.0);
+            return super.shouldContinue();
         }
     }
 }

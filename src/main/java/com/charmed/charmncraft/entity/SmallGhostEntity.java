@@ -368,46 +368,26 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         }
     }
 
-    class SmallGhostFlyGoal extends Goal {
+    class SmallGhostFlyGoal extends WanderAroundFarGoal {
         public SmallGhostFlyGoal() {
-            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE));
+            super(SmallGhostEntity.this, 1.0);
         }
 
         @Override
         public boolean canStart() {
-            // Only fly around if untamed
+            // Only wander if untamed
             if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
-
-            // Check if already has a movement target
-            net.minecraft.entity.ai.control.MoveControl moveControl = SmallGhostEntity.this.getMoveControl();
-            if (!moveControl.isMoving()) {
-                // Random chance to start flying (like ghasts)
-                return SmallGhostEntity.this.getRandom().nextInt(120) == 0;
-            }
-            return false;
+            return super.canStart();
         }
 
         @Override
         public boolean shouldContinue() {
-            // Stop if tamed
             if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
-            // Continue while moving
-            return SmallGhostEntity.this.getMoveControl().isMoving();
-        }
-
-        @Override
-        public void start() {
-            // Generate random target position like ghasts do
-            double targetX = SmallGhostEntity.this.getX() + (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
-            double targetY = SmallGhostEntity.this.getY() + (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 8.0;
-            double targetZ = SmallGhostEntity.this.getZ() + (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
-
-            // Use move control directly like ghasts
-            SmallGhostEntity.this.getMoveControl().moveTo(targetX, targetY, targetZ, 1.0);
+            return super.shouldContinue();
         }
     }
 }
