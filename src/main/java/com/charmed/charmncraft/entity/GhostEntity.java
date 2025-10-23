@@ -82,7 +82,7 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new GhostSitGoal());
         this.goalSelector.add(3, new GhostFollowOwnerGoal(1.0, 10.0F, 2.0F));
-        this.goalSelector.add(5, new GhostWanderGoal(1.0));
+        this.goalSelector.add(5, new GhostFlyGoal());
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
     }
@@ -368,14 +368,14 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
         }
     }
 
-    class GhostWanderGoal extends WanderAroundFarGoal {
-        public GhostWanderGoal(double speed) {
-            super(GhostEntity.this, speed);
+    class GhostFlyGoal extends FlyGoal {
+        public GhostFlyGoal() {
+            super(GhostEntity.this, FLYING_SPEED);
         }
 
         @Override
         public boolean canStart() {
-            // Only wander if untamed (like wild mobs)
+            // Only fly around if untamed (like wild mobs)
             if (GhostEntity.this.isTamed()) {
                 return false;
             }
