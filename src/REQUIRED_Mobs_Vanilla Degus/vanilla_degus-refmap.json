@@ -1,0 +1,34 @@
+{
+  "mappings": {
+    "roxom/vanilla_degus/mixin/BlockMixin": {
+      "onBreak": "Lnet/minecraft/class_2248;method_9576(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_1657;)V"
+    },
+    "roxom/vanilla_degus/mixin/ItemAccessor": {
+      "foodComponent": "field_18672:Lnet/minecraft/class_4174;"
+    },
+    "roxom/vanilla_degus/mixin/ItemMixin": {
+      "use": "Lnet/minecraft/class_1792;method_7836(Lnet/minecraft/class_1937;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;)Lnet/minecraft/class_1271;"
+    },
+    "roxom/vanilla_degus/mixin/WorldRendererMixin": {
+      "playSong": "Lnet/minecraft/class_761;method_8562(Lnet/minecraft/class_3414;Lnet/minecraft/class_2338;)V",
+      "setWorld": "Lnet/minecraft/class_761;method_3244(Lnet/minecraft/class_638;)V"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "roxom/vanilla_degus/mixin/BlockMixin": {
+        "onBreak": "Lnet/minecraft/class_2248;method_9576(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_1657;)V"
+      },
+      "roxom/vanilla_degus/mixin/ItemAccessor": {
+        "foodComponent": "field_18672:Lnet/minecraft/class_4174;"
+      },
+      "roxom/vanilla_degus/mixin/ItemMixin": {
+        "use": "Lnet/minecraft/class_1792;method_7836(Lnet/minecraft/class_1937;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;)Lnet/minecraft/class_1271;"
+      },
+      "roxom/vanilla_degus/mixin/WorldRendererMixin": {
+        "playSong": "Lnet/minecraft/class_761;method_8562(Lnet/minecraft/class_3414;Lnet/minecraft/class_2338;)V",
+        "setWorld": "Lnet/minecraft/class_761;method_3244(Lnet/minecraft/class_638;)V"
+      }
+    }
+  }
+}

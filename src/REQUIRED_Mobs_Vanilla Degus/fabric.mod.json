@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "vanilla_degus",
+  "version": "1.5.0",
+
+  "name": "Vanilla Degus",
+  "description": "The degu, a so-called “singing rat” of the Andes!!
+This mod gives us a wonderful opportunity to meet cute degus.",
+  "authors": [
+    "Yuto",
+    "Miluše"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/vanilla-degus"
+  },
+
+  "license": "All rights reserved",
+  "icon": "assets/vanilla_degus/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "roxom.vanilla_degus.DeguMod"
+    ],
+    "client": [
+      "roxom.vanilla_degus.DeguModClient"
+    ]
+  },
+  "mixins": [
+      "vanilla_degus.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.6",
+    "fabric": "*",
+    "minecraft": "~1.20",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
