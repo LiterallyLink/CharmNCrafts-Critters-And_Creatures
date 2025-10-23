@@ -221,6 +221,12 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     }
 
     @Override
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        // Ghosts are flying entities and should not take fall damage
+        return false;
+    }
+
+    @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", ANIMATION_TRANSITION_TICKS, state -> {
             if (this.isSitting()) {
