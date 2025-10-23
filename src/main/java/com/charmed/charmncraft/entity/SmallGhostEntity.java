@@ -39,11 +39,8 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     private static final double FLYING_SPEED = 0.35;
     private static final double FOLLOW_RANGE = 12.0;
     private static final int ANIMATION_TRANSITION_TICKS = 5;
-    private static final int MAX_INTERACTION_STATE = 2;
 
     // Tracked data
-    private static final TrackedData<Integer> INTERACTION_STATE = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> IS_HOLDING_ITEM = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IS_SITTING = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<java.util.Optional<UUID>> OWNER_UUID = DataTracker.registerData(SmallGhostEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
@@ -80,8 +77,6 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(INTERACTION_STATE, 0);
-        this.dataTracker.startTracking(IS_HOLDING_ITEM, false);
         this.dataTracker.startTracking(IS_SITTING, false);
         this.dataTracker.startTracking(OWNER_UUID, java.util.Optional.empty());
     }
@@ -89,8 +84,6 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("InteractionState", this.getInteractionState());
-        nbt.putBoolean("IsHoldingItem", this.isHoldingItem());
         nbt.putBoolean("Sitting", this.isSitting());
         if (this.getOwnerUuid() != null) {
             nbt.putUuid("Owner", this.getOwnerUuid());
@@ -100,28 +93,10 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setInteractionState(nbt.getInt("InteractionState"));
-        this.setHoldingItem(nbt.getBoolean("IsHoldingItem"));
         this.setSitting(nbt.getBoolean("Sitting"));
         if (nbt.containsUuid("Owner")) {
             this.setOwnerUuid(nbt.getUuid("Owner"));
         }
-    }
-
-    public int getInteractionState() {
-        return this.dataTracker.get(INTERACTION_STATE);
-    }
-
-    public void setInteractionState(int state) {
-        this.dataTracker.set(INTERACTION_STATE, state);
-    }
-
-    public boolean isHoldingItem() {
-        return this.dataTracker.get(IS_HOLDING_ITEM);
-    }
-
-    public void setHoldingItem(boolean holding) {
-        this.dataTracker.set(IS_HOLDING_ITEM, holding);
     }
 
     public boolean isSitting() {
@@ -164,24 +139,20 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         }
 
         if (this.isTamed()) {
-            // Cycle through interaction states: 0=sitting, 1=following, 2=wandering
-            int currentState = this.getInteractionState();
-            int nextState = (currentState + 1) % (MAX_INTERACTION_STATE + 1);
-            this.setInteractionState(nextState);
-
-            // Update sitting state
-            this.setSitting(nextState == 0);
-
-            // Send message to player
-            String messageKey = "entity.ghosts.client_message.interaction_" + nextState;
-            player.sendMessage(Text.translatable(messageKey, this.getName()), false);
-
-            return ActionResult.SUCCESS;
+            if (this.isOwner(player)) {
+                // Toggle sitting state like dogs
+                this.setSitting(!this.isSitting());
+                this.jumping = false;
+                this.navigation.stop();
+                this.setTarget(null);
+                return ActionResult.SUCCESS;
+            }
         } else if (itemStack.isOf(Items.GLOWSTONE_DUST)) {
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             this.setOwner(player);
+            this.setSitting(false); // Start following immediately after taming
             this.navigation.stop();
             this.setTarget(null);
             this.getWorld().sendEntityStatus(this, (byte) 7);
@@ -189,6 +160,10 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         }
 
         return super.interactMob(player, hand);
+    }
+
+    public boolean isOwner(PlayerEntity player) {
+        return player.getUuid().equals(this.getOwnerUuid());
     }
 
     @Nullable
@@ -302,9 +277,6 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
             if (SmallGhostEntity.this.isSitting()) {
                 return false;
             }
-            if (SmallGhostEntity.this.getInteractionState() != 1) {
-                return false;
-            }
             if (SmallGhostEntity.this.squaredDistanceTo(owner) < (double)(this.minDistance * this.minDistance)) {
                 return false;
             }
@@ -318,9 +290,6 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
                 return false;
             }
             if (SmallGhostEntity.this.isSitting()) {
-                return false;
-            }
-            if (SmallGhostEntity.this.getInteractionState() != 1) {
                 return false;
             }
             return SmallGhostEntity.this.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance);
@@ -393,10 +362,8 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
 
         @Override
         public boolean canStart() {
-            if (SmallGhostEntity.this.isSitting()) {
-                return false;
-            }
-            if (SmallGhostEntity.this.isTamed() && SmallGhostEntity.this.getInteractionState() != 2) {
+            // Only wander if untamed (like wild mobs)
+            if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
             return super.canStart();
@@ -404,10 +371,7 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
 
         @Override
         public boolean shouldContinue() {
-            if (SmallGhostEntity.this.isSitting()) {
-                return false;
-            }
-            if (SmallGhostEntity.this.isTamed() && SmallGhostEntity.this.getInteractionState() != 2) {
+            if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
             return super.shouldContinue();
