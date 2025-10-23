@@ -147,12 +147,11 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
 
-        if (this.getWorld().isClient) {
-            return ActionResult.CONSUME;
-        }
-
         if (this.isTamed()) {
             if (this.isOwner(player)) {
+                if (this.getWorld().isClient) {
+                    return ActionResult.SUCCESS;
+                }
                 // Toggle sitting state like dogs
                 this.setSitting(!this.isSitting());
                 this.jumping = false;
@@ -161,15 +160,29 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
                 return ActionResult.SUCCESS;
             }
         } else if (itemStack.isOf(Items.GLOWSTONE_DUST)) {
+            if (this.getWorld().isClient) {
+                return ActionResult.SUCCESS;
+            }
+
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
-            this.setOwner(player);
-            this.setSitting(false); // Start following immediately after taming
-            this.navigation.stop();
-            this.setTarget(null);
-            this.getWorld().sendEntityStatus(this, (byte) 7);
+
+            // Random chance to tame, like wolves (1/3 chance)
+            if (this.random.nextInt(3) == 0) {
+                this.setOwner(player);
+                this.setSitting(false); // Start following immediately after taming
+                this.navigation.stop();
+                this.setTarget(null);
+                this.getWorld().sendEntityStatus(this, (byte) 7); // Hearts particles
+            } else {
+                this.getWorld().sendEntityStatus(this, (byte) 6); // Smoke particles
+            }
             return ActionResult.SUCCESS;
+        }
+
+        if (this.getWorld().isClient) {
+            return ActionResult.CONSUME;
         }
 
         return super.interactMob(player, hand);
@@ -177,6 +190,41 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
 
     public boolean isOwner(PlayerEntity player) {
         return player.getUuid().equals(this.getOwnerUuid());
+    }
+
+    @Override
+    public void handleStatus(byte status) {
+        if (status == 7) {
+            // Success particles (hearts) - same as wolves
+            this.showEmoteParticle(true);
+        } else if (status == 6) {
+            // Failure particles (smoke) - same as wolves
+            this.showEmoteParticle(false);
+        } else {
+            super.handleStatus(status);
+        }
+    }
+
+    private void showEmoteParticle(boolean positive) {
+        // Only spawn particles on client side
+        if (!this.getWorld().isClient) {
+            return;
+        }
+
+        net.minecraft.particle.ParticleEffect particleEffect = positive
+            ? net.minecraft.particle.ParticleTypes.HEART
+            : net.minecraft.particle.ParticleTypes.SMOKE;
+
+        for (int i = 0; i < 7; i++) {
+            double d = this.random.nextGaussian() * 0.02;
+            double e = this.random.nextGaussian() * 0.02;
+            double f = this.random.nextGaussian() * 0.02;
+            this.getWorld().addParticle(particleEffect,
+                this.getParticleX(1.0),
+                this.getRandomBodyY() + 0.5,
+                this.getParticleZ(1.0),
+                d, e, f);
+        }
     }
 
     @Nullable
@@ -218,6 +266,12 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         if (!this.getWorld().isClient && !this.hasNoGravity()) {
             this.setNoGravity(true);
         }
+    }
+
+    @Override
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        // Small ghosts are flying entities and should not take fall damage
+        return false;
     }
 
     @Override
