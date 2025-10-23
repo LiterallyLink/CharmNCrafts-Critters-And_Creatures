@@ -1,7 +1,6 @@
 package com.charmed.charmncraft;
 
 import com.charmed.charmncraft.entity.CaracalEntity;
-import com.charmed.charmncraft.entity.DeguEntity;
 import com.charmed.charmncraft.entity.DuckEntity;
 import com.charmed.charmncraft.entity.GhostEntity;
 import com.charmed.charmncraft.entity.QuacklingEntity;
@@ -64,14 +63,6 @@ public class ModEntities {
                     .build()
     );
 
-    public static final EntityType<DeguEntity> DEGU = Registry.register(
-            Registries.ENTITY_TYPE,
-            new Identifier("vanilla_degus", "degu"),
-            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DeguEntity::new)
-                    .dimensions(EntityType.RABBIT.getDimensions().scaled(0.8f))
-                    .build()
-    );
-
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering entities.");
 
@@ -81,6 +72,5 @@ public class ModEntities {
         FabricDefaultAttributeRegistry.register(SNUFFLE, SnuffleEntity.createSnuffleAttributes());
         FabricDefaultAttributeRegistry.register(GHOST, GhostEntity.createGhostAttributes());
         FabricDefaultAttributeRegistry.register(SMALL_GHOST, SmallGhostEntity.createSmallGhostAttributes());
-        FabricDefaultAttributeRegistry.register(DEGU, DeguEntity.createDeguAttributes());
     }
 }
