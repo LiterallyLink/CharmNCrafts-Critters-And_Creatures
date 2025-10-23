@@ -164,11 +164,17 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
-            this.setOwner(player);
-            this.setSitting(false); // Start following immediately after taming
-            this.navigation.stop();
-            this.setTarget(null);
-            this.getWorld().sendEntityStatus(this, (byte) 7);
+
+            // Random chance to tame, like wolves (1/3 chance)
+            if (this.random.nextInt(3) == 0) {
+                this.setOwner(player);
+                this.setSitting(false); // Start following immediately after taming
+                this.navigation.stop();
+                this.setTarget(null);
+                this.getWorld().sendEntityStatus(this, (byte) 7); // Hearts particles
+            } else {
+                this.getWorld().sendEntityStatus(this, (byte) 6); // Smoke particles
+            }
             return ActionResult.SUCCESS;
         }
 
@@ -177,6 +183,36 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
 
     public boolean isOwner(PlayerEntity player) {
         return player.getUuid().equals(this.getOwnerUuid());
+    }
+
+    @Override
+    public void handleStatus(byte status) {
+        if (status == 7) {
+            // Success particles (hearts) - same as wolves
+            this.showEmoteParticle(true);
+        } else if (status == 6) {
+            // Failure particles (smoke) - same as wolves
+            this.showEmoteParticle(false);
+        } else {
+            super.handleStatus(status);
+        }
+    }
+
+    private void showEmoteParticle(boolean positive) {
+        net.minecraft.particle.ParticleEffect particleEffect = positive
+            ? net.minecraft.particle.ParticleTypes.HEART
+            : net.minecraft.particle.ParticleTypes.SMOKE;
+
+        for (int i = 0; i < 7; i++) {
+            double d = this.random.nextGaussian() * 0.02;
+            double e = this.random.nextGaussian() * 0.02;
+            double f = this.random.nextGaussian() * 0.02;
+            this.getWorld().addParticle(particleEffect,
+                this.getParticleX(1.0),
+                this.getRandomBodyY() + 0.5,
+                this.getParticleZ(1.0),
+                d, e, f);
+        }
     }
 
     @Nullable
