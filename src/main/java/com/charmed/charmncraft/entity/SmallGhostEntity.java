@@ -404,12 +404,11 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         public void start() {
             // Generate a random 3D position to fly to
             net.minecraft.util.math.Vec3d currentPos = SmallGhostEntity.this.getPos();
-            net.minecraft.util.math.Random random = SmallGhostEntity.this.getRandom();
 
             // Random offset in all 3 dimensions
-            double offsetX = (random.nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
-            double offsetY = (random.nextDouble() * 2.0 - 1.0) * (MAX_DISTANCE / 2); // Less vertical range
-            double offsetZ = (random.nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
+            double offsetX = (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
+            double offsetY = (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * (MAX_DISTANCE / 2); // Less vertical range
+            double offsetZ = (SmallGhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
 
             net.minecraft.util.math.BlockPos targetPos = net.minecraft.util.math.BlockPos.ofFloored(
                 currentPos.x + offsetX,
