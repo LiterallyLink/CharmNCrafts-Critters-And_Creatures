@@ -369,55 +369,46 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
     }
 
     class GhostFlyGoal extends Goal {
-        private static final int MAX_DISTANCE = 10;
-        private static final int MIN_DISTANCE = 5;
-
         public GhostFlyGoal() {
             this.setControls(java.util.EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canStart() {
-            // Only fly around if untamed (like wild mobs)
+            // Only fly around if untamed
             if (GhostEntity.this.isTamed()) {
                 return false;
             }
 
-            // Don't start a new wander if already navigating
-            if (!GhostEntity.this.getNavigation().isIdle()) {
-                return false;
+            // Check if already has a movement target
+            net.minecraft.entity.ai.control.MoveControl moveControl = GhostEntity.this.getMoveControl();
+            if (!moveControl.isMoving()) {
+                // Random chance to start flying (like ghasts)
+                return GhostEntity.this.getRandom().nextInt(120) == 0;
             }
-
-            // Random chance to start wandering (like vanilla mobs)
-            return GhostEntity.this.getRandom().nextInt(120) == 0;
+            return false;
         }
 
         @Override
         public boolean shouldContinue() {
+            // Stop if tamed
             if (GhostEntity.this.isTamed()) {
                 return false;
             }
-            return !GhostEntity.this.getNavigation().isIdle();
+            // Continue while moving
+            return GhostEntity.this.getMoveControl().isMoving();
         }
 
         @Override
         public void start() {
-            // Generate a random 3D position to fly to
-            net.minecraft.util.math.Vec3d currentPos = GhostEntity.this.getPos();
+            // Generate random target position like ghasts do
+            java.util.Random random = GhostEntity.this.getRandom();
+            double targetX = GhostEntity.this.getX() + (random.nextDouble() * 2.0 - 1.0) * 16.0;
+            double targetY = GhostEntity.this.getY() + (random.nextDouble() * 2.0 - 1.0) * 8.0;
+            double targetZ = GhostEntity.this.getZ() + (random.nextDouble() * 2.0 - 1.0) * 16.0;
 
-            // Random offset in all 3 dimensions
-            double offsetX = (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
-            double offsetY = (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * (MAX_DISTANCE / 2); // Less vertical range
-            double offsetZ = (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
-
-            net.minecraft.util.math.BlockPos targetPos = net.minecraft.util.math.BlockPos.ofFloored(
-                currentPos.x + offsetX,
-                currentPos.y + offsetY,
-                currentPos.z + offsetZ
-            );
-
-            // Navigate to the random position
-            GhostEntity.this.getNavigation().startMovingTo(targetPos.getX(), targetPos.getY(), targetPos.getZ(), FLYING_SPEED);
+            // Use move control directly like ghasts
+            GhostEntity.this.getMoveControl().moveTo(targetX, targetY, targetZ, 1.0);
         }
     }
 }
