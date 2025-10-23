@@ -368,9 +368,12 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
         }
     }
 
-    class SmallGhostFlyGoal extends FlyGoal {
+    class SmallGhostFlyGoal extends Goal {
+        private static final int MAX_DISTANCE = 10;
+        private static final int MIN_DISTANCE = 5;
+
         public SmallGhostFlyGoal() {
-            super(SmallGhostEntity.this, FLYING_SPEED);
+            this.setControls(java.util.EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
@@ -379,7 +382,14 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
             if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
-            return super.canStart();
+
+            // Don't start a new wander if already navigating
+            if (!SmallGhostEntity.this.getNavigation().isIdle()) {
+                return false;
+            }
+
+            // Random chance to start wandering (like vanilla mobs)
+            return SmallGhostEntity.this.getRandom().nextInt(120) == 0;
         }
 
         @Override
@@ -387,7 +397,28 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
             if (SmallGhostEntity.this.isTamed()) {
                 return false;
             }
-            return super.shouldContinue();
+            return !SmallGhostEntity.this.getNavigation().isIdle();
+        }
+
+        @Override
+        public void start() {
+            // Generate a random 3D position to fly to
+            net.minecraft.util.math.Vec3d currentPos = SmallGhostEntity.this.getPos();
+            net.minecraft.util.math.Random random = SmallGhostEntity.this.getRandom();
+
+            // Random offset in all 3 dimensions
+            double offsetX = (random.nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
+            double offsetY = (random.nextDouble() * 2.0 - 1.0) * (MAX_DISTANCE / 2); // Less vertical range
+            double offsetZ = (random.nextDouble() * 2.0 - 1.0) * MAX_DISTANCE;
+
+            net.minecraft.util.math.BlockPos targetPos = net.minecraft.util.math.BlockPos.ofFloored(
+                currentPos.x + offsetX,
+                currentPos.y + offsetY,
+                currentPos.z + offsetZ
+            );
+
+            // Navigate to the random position
+            SmallGhostEntity.this.getNavigation().startMovingTo(targetPos.getX(), targetPos.getY(), targetPos.getZ(), FLYING_SPEED);
         }
     }
 }
