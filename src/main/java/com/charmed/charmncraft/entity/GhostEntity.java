@@ -82,6 +82,7 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new GhostSitGoal());
         this.goalSelector.add(3, new GhostFollowOwnerGoal(1.0, 10.0F, 2.0F));
+        this.goalSelector.add(4, new TemptGoal(this, 1.0, Items.GLOWSTONE_DUST, false));
         this.goalSelector.add(5, new GhostFlyGoal());
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
