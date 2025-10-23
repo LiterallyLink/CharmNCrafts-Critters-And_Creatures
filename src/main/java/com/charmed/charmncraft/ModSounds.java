@@ -27,6 +27,11 @@ public class ModSounds {
     public static final SoundEvent ENTITY_SMALL_GHOST_DEATH = registerGhostSound("entity.small_ghost.death");
     public static final SoundEvent ENTITY_SMALL_GHOST_HURT = registerGhostSound("entity.small_ghost.hurt");
 
+    // Degu sounds
+    public static final SoundEvent ENTITY_DEGU_AMBIENT = registerDeguSound("degu_ambient");
+    public static final SoundEvent ENTITY_DEGU_HURT = registerDeguSound("degu_angry");
+    public static final SoundEvent ENTITY_DEGU_DEATH = registerDeguSound("degu_death");
+
     private static SoundEvent registerSound(String id) {
         Identifier identifier = new Identifier("snuffles", id);
         return Registry.register(Registries.SOUND_EVENT, identifier, SoundEvent.of(identifier));
@@ -37,8 +42,14 @@ public class ModSounds {
         return Registry.register(Registries.SOUND_EVENT, identifier, SoundEvent.of(identifier));
     }
 
+    private static SoundEvent registerDeguSound(String id) {
+        Identifier identifier = new Identifier("vanilla_degus", id);
+        return Registry.register(Registries.SOUND_EVENT, identifier, SoundEvent.of(identifier));
+    }
+
     public static void initialize() {
         CharmNCraft.LOGGER.info("Registering Snuffle sounds.");
         CharmNCraft.LOGGER.info("Registering Ghost sounds.");
+        CharmNCraft.LOGGER.info("Registering Degu sounds.");
     }
 }

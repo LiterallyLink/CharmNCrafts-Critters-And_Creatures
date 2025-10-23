@@ -3,6 +3,7 @@ package com.charmed.charmncraft;
 import com.charmed.charmncraft.client.model.SnuffleModel;
 import com.charmed.charmncraft.client.particle.SnufflesSnowflakeParticle;
 import com.charmed.charmncraft.client.renderer.CaracalRenderer;
+import com.charmed.charmncraft.client.renderer.DeguRenderer;
 import com.charmed.charmncraft.client.renderer.DuckRenderer;
 import com.charmed.charmncraft.client.renderer.GhostRenderer;
 import com.charmed.charmncraft.client.renderer.ModEntityModelLayers;
@@ -24,6 +25,7 @@ public class CharmNCraftClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.SNUFFLE, SnuffleRenderer::new);
 		EntityRendererRegistry.register(ModEntities.GHOST, GhostRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SMALL_GHOST, SmallGhostRenderer::new);
+		EntityRendererRegistry.register(ModEntities.DEGU, DeguRenderer::new);
 
 		// Register entity model layers
 		EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.SNUFFLE, SnuffleModel::getTexturedModelData);

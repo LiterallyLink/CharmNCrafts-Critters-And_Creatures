@@ -1,0 +1,8 @@
+{
+  "item.vanilla_degus.degu_spawn_egg": "Generar degu",
+  "entity.vanilla_degus.degu": "Degu",
+  "subtitles.vanilla_degus.ambient": "Degu gorjea",
+  "subtitles.vanilla_degus.angry": "Degu herido",
+  "subtitles.vanilla_degus.death": "Degu muere",
+  "effect.vanilla_degus.degus_grace": "Gracia de degu"
+}
