@@ -402,10 +402,9 @@ public class GhostEntity extends AnimalEntity implements GeoEntity {
         @Override
         public void start() {
             // Generate random target position like ghasts do
-            java.util.Random random = GhostEntity.this.getRandom();
-            double targetX = GhostEntity.this.getX() + (random.nextDouble() * 2.0 - 1.0) * 16.0;
-            double targetY = GhostEntity.this.getY() + (random.nextDouble() * 2.0 - 1.0) * 8.0;
-            double targetZ = GhostEntity.this.getZ() + (random.nextDouble() * 2.0 - 1.0) * 16.0;
+            double targetX = GhostEntity.this.getX() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
+            double targetY = GhostEntity.this.getY() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 8.0;
+            double targetZ = GhostEntity.this.getZ() + (GhostEntity.this.getRandom().nextDouble() * 2.0 - 1.0) * 16.0;
 
             // Use move control directly like ghasts
             GhostEntity.this.getMoveControl().moveTo(targetX, targetY, targetZ, 1.0);
