@@ -1,7 +1,10 @@
 package com.charmed.charmncraft.entity;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.BirdNavigation;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -54,6 +57,16 @@ public class SmallGhostEntity extends AnimalEntity implements GeoEntity {
     public SmallGhostEntity(EntityType<? extends AnimalEntity> entityType, World world) {
         super(entityType, world);
         this.setNoGravity(true);
+        this.moveControl = new FlightMoveControl(this, 20, true);
+    }
+
+    @Override
+    protected EntityNavigation createNavigation(World world) {
+        BirdNavigation birdNavigation = new BirdNavigation(this, world);
+        birdNavigation.setCanPathThroughDoors(false);
+        birdNavigation.setCanSwim(true);
+        birdNavigation.setCanEnterOpenDoors(true);
+        return birdNavigation;
     }
 
     public static DefaultAttributeContainer.Builder createSmallGhostAttributes() {
